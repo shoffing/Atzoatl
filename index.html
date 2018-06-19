@@ -144,7 +144,6 @@
       },
       methods: {
         reset: function () {
-          this.desiredTier = 16;
           this.autoBump = true;
           this.mapTiersInput = "";
           this.resultText = "";
@@ -159,8 +158,15 @@
                 this.desiredTier = tier;
               }
 
-              let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
-              this.resultText = "Minimum recommended map tier: " + rec;
+              if (this.tierCap < this.desiredTier) {
+                this.resultText = "Minimum recommended map tier: " + this.desiredTier;
+              } else {
+                let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
+                if (rec <= 0) {
+                  rec = "N/A";
+                }
+                this.resultText = "Minimum recommended map tier: " + rec;
+              }
             }
           }
         }
