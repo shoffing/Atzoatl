@@ -1,0 +1,167 @@
+<html>
+<head>
+  <title>Atzoatl Planner</title>
+  <style>
+    #map-tiers-grid {
+      display: grid;
+      grid-gap: 1px;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows: repeat(4, 80px);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      margin: 0px;
+      background: #3D4252;
+      height: 100%;
+      font-size: 1.1em;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+    }
+
+    #axo-app {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      height: auto;
+      color: #3D4252;
+      background: #CACBD5;
+      padding: 32px;
+      border: 4px solid #D55E2D;
+      border-top: none;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    #new {
+      margin-top: 16px;
+      font-size: 1.8em;
+    }
+
+    pre {
+      font-size: 1.5em;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div id="axo-app">
+      <div>
+        <label for="desired-tier">Desired tier of temple:</label>
+        <input type="number" id="desired-tier" min=1 max=16 v-model="desiredTier">
+        <input type="checkbox" id="auto-bump" v-model="autoBump">
+        <label for="auto-bump">Auto-bump</label>
+      </div>
+
+      <button @click="reset" id="new">New Temple</button>
+
+      <div>
+        <h2>Map tiers of your incursions:</h2>
+        <div id="map-tiers-grid">
+          <button @click="addTier">1</button>
+          <button @click="addTier">2</button>
+          <button @click="addTier">3</button>
+          <button @click="addTier">4</button>
+          <button @click="addTier">5</button>
+          <button @click="addTier">6</button>
+          <button @click="addTier">7</button>
+          <button @click="addTier">8</button>
+          <button @click="addTier">9</button>
+          <button @click="addTier">10</button>
+          <button @click="addTier">11</button>
+          <button @click="addTier">12</button>
+          <button @click="addTier">13</button>
+          <button @click="addTier">14</button>
+          <button @click="addTier">15</button>
+          <button @click="addTier">16</button>
+        </div>
+      </div>
+
+      <div>
+        <input type="text" id="map-tiers" v-model="mapTiersInput">
+      </div>
+
+      <div>
+        <label>Remaining:</label>
+        <input type="number" disabled v-model="remaining">
+        <label>Tier Cap:</label>
+        <input type="number" disabled v-model="tierCap">
+      </div>
+
+      <pre>{{resultText}}</pre>
+    </div>
+  </div>
+  
+	<script>
+		var app = new Vue({
+			el: '#axo-app',
+			data: {
+				desiredTier: 16,
+				autoBump: true,
+				mapTiersInput: "",
+				resultText: ""
+			},
+			watch: {
+				mapTiersInput: function (newMapTiers, oldMapTiers) {
+					this.mapTiers = _.map(newMapTiers.split(","), _.trim);
+				}
+			},
+			computed: {
+				remaining: function () {
+					let remain = this.mapTiers && (11 - this.mapTiers.length);
+
+					if (remain <= 0) {
+						let mapTier = Math.min(((_.sum(this.mapTiers)/11.0) + 4), this.tierCap);
+						this.resultText = "Your temple will be T" + parseInt(mapTier) + "!";
+					}
+
+					return remain;
+				},
+				mapTiers: {
+					get: function () {
+						return this.mapTiersInput ? _.map(this.mapTiersInput.split(","), function(tier) {
+							return parseInt(_.trim(tier));
+						}) : [];
+					},
+					set: function (newMapTiers) {
+						this.mapTiersInput = newMapTiers.join(", ");
+					}
+				},
+				tierCap: function () {
+					return _.max(this.mapTiers);
+				}
+			},
+			methods: {
+				reset: function () {
+					this.desiredTier = 16;
+					this.autoBump = true;
+					this.mapTiersInput = "";
+					this.resultText = "";
+				},
+				addTier: function (event) {
+					if (event) {
+						if (this.remaining >= 1) {
+							let tier = parseInt(event.target.innerHTML);
+							this.mapTiers = _.concat(this.mapTiers, tier);
+
+							if (this.autoBump && tier > this.desiredTier) {
+								this.desiredTier = tier;
+							}
+
+							let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
+							this.resultText = "Minimum recommended map tier: " + rec;
+						}
+					}
+				}
+			}
+		});
+	</script>
+</body>
+</html>
