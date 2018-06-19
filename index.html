@@ -100,69 +100,69 @@
     </div>
   </div>
 
-	<script>
-		var app = new Vue({
-			el: '#axo-app',
-			data: {
-				desiredTier: 16,
-				autoBump: true,
-				mapTiersInput: "",
-				resultText: ""
-			},
-			watch: {
-				mapTiersInput: function (newMapTiers, oldMapTiers) {
-					this.mapTiers = _.map(newMapTiers.split(","), _.trim);
-				}
-			},
-			computed: {
-				remaining: function () {
-					let remain = this.mapTiers && (11 - this.mapTiers.length);
+  <script>
+    var app = new Vue({
+      el: '#axo-app',
+      data: {
+        desiredTier: 16,
+        autoBump: true,
+        mapTiersInput: "",
+        resultText: ""
+      },
+      watch: {
+        mapTiersInput: function (newMapTiers, oldMapTiers) {
+          this.mapTiers = _.map(newMapTiers.split(","), _.trim);
+        }
+      },
+      computed: {
+        remaining: function () {
+          let remain = this.mapTiers && (11 - this.mapTiers.length);
 
-					if (remain <= 0) {
-						let mapTier = Math.min(((_.sum(this.mapTiers)/11.0) + 4), this.tierCap);
-						this.resultText = "Your temple will be T" + parseInt(mapTier) + "!";
-					}
+          if (remain <= 0) {
+            let mapTier = Math.min(((_.sum(this.mapTiers)/11.0) + 4), this.tierCap);
+            this.resultText = "Your temple will be T" + parseInt(mapTier) + "!";
+          }
 
-					return remain;
-				},
-				mapTiers: {
-					get: function () {
-						return this.mapTiersInput ? _.map(this.mapTiersInput.split(","), function(tier) {
-							return parseInt(_.trim(tier));
-						}) : [];
-					},
-					set: function (newMapTiers) {
-						this.mapTiersInput = newMapTiers.join(", ");
-					}
-				},
-				tierCap: function () {
-					return _.max(this.mapTiers);
-				}
-			},
-			methods: {
-				reset: function () {
-					this.desiredTier = 16;
-					this.autoBump = true;
-					this.mapTiersInput = "";
-					this.resultText = "";
-				},
-				addTier: function (event) {
-					if (event) {
-						if (this.remaining >= 1) {
-							let tier = parseInt(event.target.innerHTML);
-							this.mapTiers = _.concat(this.mapTiers, tier);
+          return remain;
+        },
+        mapTiers: {
+          get: function () {
+            return this.mapTiersInput ? _.map(this.mapTiersInput.split(","), function(tier) {
+              return parseInt(_.trim(tier));
+            }) : [];
+          },
+          set: function (newMapTiers) {
+            this.mapTiersInput = newMapTiers.join(", ");
+          }
+        },
+        tierCap: function () {
+          return _.max(this.mapTiers);
+        }
+      },
+      methods: {
+        reset: function () {
+          this.desiredTier = 16;
+          this.autoBump = true;
+          this.mapTiersInput = "";
+          this.resultText = "";
+        },
+        addTier: function (event) {
+          if (event) {
+            if (this.remaining >= 1) {
+              let tier = parseInt(event.target.innerHTML);
+              this.mapTiers = _.concat(this.mapTiers, tier);
 
-							if (this.autoBump && tier > this.desiredTier) {
-								this.desiredTier = tier;
-							}
+              if (this.autoBump && tier > this.desiredTier) {
+                this.desiredTier = tier;
+              }
 
-							let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
-							this.resultText = "Minimum recommended map tier: " + rec;
-						}
-					}
-				}
-			}
-		});
-	</script>
+              let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
+              this.resultText = "Minimum recommended map tier: " + rec;
+            }
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
