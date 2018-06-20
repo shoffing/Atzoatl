@@ -161,7 +161,7 @@
               if (this.tierCap < this.desiredTier) {
                 this.resultText = "Minimum recommended map tier: " + this.desiredTier;
               } else {
-                let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0-(this.mapTiers.length - 1))), this.desiredTier);
+                let rec = Math.min(Math.ceil((11 * (this.desiredTier - 4) - _.sum(this.mapTiers)) / (11.0 - this.mapTiers.length)), this.desiredTier);
                 if (rec <= 0) {
                   rec = "N/A";
                 }
